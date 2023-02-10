@@ -46,6 +46,7 @@ What would you want to do?
 [1] Encrypt/Decrypt Message.
 [2] Encrypt/Decrypt Ascii Code.
 [3] Convert Ascii Code to Text.
+[4] Convert Text to Ascii Code.
 [0] Exit.
 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 Option  ->

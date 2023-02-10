@@ -9,7 +9,7 @@ This script implements the ChaCha20 stream cipher algorithm.
 """
 
 # Receives a number or string containing an hexadecimal number in multiple possible formats
-# ('0xAAAA', 'AAAA', 'AA:AA', 'AA : AA'...) and returns a text in the next format: 'AAAA'
+# ('0xAAAA', 'AAAA', 'AA:AA', 'AA : AA'...) and returns a hexadecimal in format: 'AAAA'
 def format_to_hex(x):
   x = str(x)
   if x.isnumeric():
@@ -22,7 +22,7 @@ def format_to_hex(x):
       raise ValueError('Invalid hexadecimal x!')
   return x
 
-# Receives a string containing an hexadecimal number and returns a text in the next format: 'AAAA'
+# Receives a string containing an hexadecimal number and returns an hexadecimal in format: 'AAAA'
 # with n digits (if n is greater than the number of digits of the number, it will be padded with 0s)
 def format_to_hex_with_n_digits(x, n):
   if n < 1:
@@ -38,6 +38,7 @@ def hex_to_bin(x):
 def text_to_ascii(text):
   return [str(ord(i)).zfill(3) for i in text]
 
+# Converts ASCII Code Integers to a string
 def ascii_to_text(ascii):
   ascii = str(ascii)
   if len(ascii) % 3 != 0:
@@ -58,7 +59,7 @@ def split_n_by_n(x, n):
     raise ValueError('String length is not a multiple of n!')
   return [x[i:i + n] for i in range(0, len(x), n)]
 
-# Split a string in a word format ([['AA', 'BB', 'CC', 'DD'], ['EE', 'FF', 'GG', 'HH']...])
+# Split an hexadecimal number in a word format ([['AA', 'BB', 'CC', 'DD'], ['EE', 'FF', 'GG', 'HH']...])
 def split_into_words(x):
   return split_n_by_n(split_n_by_n(x, 2), 4)
 
@@ -122,6 +123,7 @@ def iterate_state(state):
           ' ' + state[i + 2] + ' ' + state[i + 3])
   print('')
 
+# Encrypts/decrypts a text making a XOR operation with the key stream
 def encrypt_decrypt(text, key_stream):
   if len(key_stream) != N_WORDS:
     raise ValueError('Key stream must have 16 words!')
@@ -144,8 +146,8 @@ N_HEX = int(N_BITS / 4)
 
 N_WORDS = 16
 
+# Main function
 def main():
-
   while True:
     key_is_hex = counter_is_hex = nonce_is_hex = False
     text = str()
@@ -173,7 +175,7 @@ def main():
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       break
 
-    # If option is '1', start the cipher
+    # If option is '1' or '2', ask for key, counter and nonce
     if option == '1' or option == '2':
       # Ask for key
       key = input('Introduce key: ')
@@ -206,7 +208,7 @@ def main():
 
       initial_state = CONSTANT + key + [counter] + nonce
 
-      # Transform to little endian the values corresponding to the key and the nonce
+      # Transform to little endian the values that are in hex
       if key_is_hex:
         for i in range(4, 12):
           initial_state[i].reverse()
@@ -264,6 +266,12 @@ def main():
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       print(output_ascii)
 
+      text = ascii_to_text(output_ascii)
+      print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
+      print('■                        TEXT OUTPUT                              ■')
+      print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
+      print(text)
+
     # If option is 3, ask for ascii code to convert to text
     if option == '3':
       ascii_code = input('Introduce ascii code: ')
@@ -281,5 +289,6 @@ def main():
       print('■                        ASCII CODE                               ■')
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       print(ascii_code)
+
 
 main()

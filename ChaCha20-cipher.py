@@ -10,24 +10,22 @@ This script implements the ChaCha20 stream cipher algorithm.
 
 # Receives a number or string containing an hexadecimal number in multiple possible formats
 # ('0xAAAA', 'AAAA', 'AA:AA', 'AA : AA'...) and returns a hexadecimal in format: 'AAAA'
-def format_to_hex(x):
+def to_hex(x, n = 0):
+  if n < 0:
+    raise ValueError('n must be a positive integer!')
+  # Convert to string and remove spaces and colons
   x = str(x)
   if x.isnumeric():
     x = hex(int(x))
   x = x.upper().replace(' ', '').replace(':', '')
+  # Cut the '0X' prefix if it exists
   if x[0:2] == '0X':
     x = x[2:]
+  # Check if the string is a valid hexadecimal number
   for i in range(len(x)):
     if x[i] not in '0123456789ABCDEF':
       raise ValueError('Invalid hexadecimal x!')
-  return x
-
-# Receives a string containing an hexadecimal number and returns an hexadecimal in format: 'AAAA'
-# with n digits (if n is greater than the number of digits of the number, it will be padded with 0s)
-def format_to_hex_with_n_digits(x, n):
-  if n < 1:
-    raise ValueError('n must be a positive integer!')
-  return format_to_hex(x).zfill(n)
+  return x.zfill(n)
 
 # Receives a string containing an hexadecimal number and transforms it to binary
 # with its equivalent length (1 hex = 4 bits)
@@ -36,7 +34,7 @@ def hex_to_bin(x):
 
 # Converts a string to ASCII Code Integers
 def text_to_ascii(text):
-  return [str(ord(i)).zfill(3) for i in text]
+  return ''.join([str(ord(i)).zfill(3) for i in text])
 
 # Converts ASCII Code Integers to a string
 def ascii_to_text(ascii):
@@ -110,10 +108,10 @@ def generate_key_stream(input):
 # Receives a state and formats it to hexadecimal
 def format_state(state):
   for i in range(0, len(state), 4):
-    state[i] = format_to_hex_with_n_digits(hex(int(state[i])), 8)
-    state[i + 1] = format_to_hex_with_n_digits(hex(int(state[i + 1])), 8)
-    state[i + 2] = format_to_hex_with_n_digits(hex(int(state[i + 2])), 8)
-    state[i + 3] = format_to_hex_with_n_digits(hex(int(state[i + 3])), 8)
+    state[i] = to_hex(state[i], 8)
+    state[i + 1] = to_hex(state[i + 1], 8)
+    state[i + 2] = to_hex(state[i + 2], 8)
+    state[i + 3] = to_hex(state[i + 3], 8)
 
 # Iterates the state and prints it
 def iterate_state(state):
@@ -128,7 +126,7 @@ def encrypt_decrypt(text, key_stream):
   if len(key_stream) != N_WORDS:
     raise ValueError('Key stream must have 16 words!')
   key_stream = ''.join(key_stream)
-  text = ''.join(text_to_ascii(text))
+  text = text_to_ascii(text)
   return int(text) ^ int(key_stream, 16)
 
 """"""
@@ -140,7 +138,7 @@ N_HEX = int(N_BITS / 4)
 N_WORDS = 16
 
 # Format the constant to the correct format
-CONSTANT = split_n_by_n(format_to_hex(CONSTANT), 8)
+CONSTANT = split_n_by_n(to_hex(CONSTANT), 8)
 """"""
 
 # Main function
@@ -178,7 +176,7 @@ def main():
       key = input('Introduce key: ')
       if not key.isnumeric():
         key_is_hex = True
-      key = format_to_hex_with_n_digits(key, 64)
+      key = to_hex(key, 64)
       if len(key) != 64:
         raise ValueError('Key must be 64 characters long!')
       key = split_into_words(key)
@@ -188,7 +186,7 @@ def main():
       counter = input('Introduce counter: ')
       if not counter.isnumeric():
         counter_is_hex = True
-      counter = format_to_hex_with_n_digits(counter, 8)
+      counter = to_hex(counter, 8)
       if len(counter) > 8:
         raise ValueError('Counter must be up to 8 characters long!')
       counter = split_n_by_n(counter, 2)
@@ -198,7 +196,7 @@ def main():
       nonce = input('Introduce nonce: ')
       if not nonce.isnumeric():
         nonce_is_hex = True
-      nonce = format_to_hex_with_n_digits(nonce, 24)
+      nonce = to_hex(nonce, 24)
       if len(nonce) != 24:
         raise ValueError('Nonce must be 24 characters long!')
       nonce = split_into_words(nonce)
@@ -281,11 +279,10 @@ def main():
     # If option is 4, ask for text to convert to ascii code
     if option == '4':
       text = input('Introduce text: ')
-      ascii_code = ''.join(text_to_ascii(text))
+      ascii_code = text_to_ascii(text)
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       print('■                        ASCII CODE                               ■')
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       print(ascii_code)
-
 
 main()

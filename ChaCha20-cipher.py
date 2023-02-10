@@ -131,19 +131,17 @@ def encrypt_decrypt(text, key_stream):
   text = ''.join(text_to_ascii(text))
   return int(text) ^ int(key_stream, 16)
 
-###############################################################################
-
+""""""
 # Constants
 ROUNDS = 10
 CONSTANT = '61707865:3320646E:79622D32:6B206574'
+N_BITS = 32
+N_HEX = int(N_BITS / 4)
+N_WORDS = 16
 
 # Format the constant to the correct format
 CONSTANT = split_n_by_n(format_to_hex(CONSTANT), 8)
-
-N_BITS = 32
-N_HEX = int(N_BITS / 4)
-
-N_WORDS = 16
+""""""
 
 # Main function
 def main():

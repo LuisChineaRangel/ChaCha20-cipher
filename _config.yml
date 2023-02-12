@@ -23,6 +23,5 @@ exclude:
   - CNAME
   - Gemfile
   - Gemfile.lock
-  - LICENSE
   - screenshot.png
   - docs/

@@ -43,8 +43,8 @@ Once executed, a menu will prompt asking for desired option:
 ■              WELCOME TO THE CHACHA20 CIPHER TOOL!               ■
 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 What would you want to do?
-[1] Encrypt/Decrypt Message.
-[2] Encrypt/Decrypt Ascii Code.
+[1] Cipher Message.
+[2] Cipher Ascii Code of Message.
 [3] Convert Ascii Code to Text.
 [4] Convert Text to Ascii Code.
 [0] Exit.

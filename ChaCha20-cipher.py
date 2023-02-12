@@ -81,8 +81,8 @@ def quarter_round(a, b, c, d):
   b = left_rotate_n_bits(b ^ c, 7)
   return a, b, c, d
 
-# Generates the key stream for encryption/decryption
-def generate_key_stream(input):
+# Generates a ChaCha20 block
+def chacha_block(input):
   if len(input) != N_WORDS:
     raise ValueError('Input must have 16 words!')
 
@@ -90,7 +90,7 @@ def generate_key_stream(input):
   for i in range(N_WORDS):
     x[i] = input[i] = int(input[i], N_WORDS)
 
-  for i in range(0, ROUNDS):
+  for i in range(0, ROUNDS): 
     # Columns round
     x[0], x[4], x[8], x[12] = quarter_round(x[0], x[4], x[8], x[12])
     x[1], x[5], x[9], x[13] = quarter_round(x[1], x[5], x[9], x[13])
@@ -105,6 +105,13 @@ def generate_key_stream(input):
 
   return x
 
+# Generates a ChaCha20 key stream
+def generate_key_stream(initial_state, final_state):
+  key_stream = [None] * N_WORDS
+  for i in range(N_WORDS):
+    key_stream[i] = truncate(initial_state[i] + final_state[i], N_HEX)
+  return key_stream
+
 # Receives a state and formats it to hexadecimal
 def format_state(state):
   for i in range(0, len(state), 4):
@@ -112,6 +119,8 @@ def format_state(state):
     state[i + 1] = to_hex(state[i + 1], 8)
     state[i + 2] = to_hex(state[i + 2], 8)
     state[i + 3] = to_hex(state[i + 3], 8)
+    
+  return state
 
 # Iterates the state and prints it
 def iterate_state(state):
@@ -121,8 +130,8 @@ def iterate_state(state):
           ' ' + state[i + 2] + ' ' + state[i + 3])
   print('')
 
-# Encrypts/decrypts a text making a XOR operation with the key stream
-def encrypt_decrypt(text, key_stream):
+# Cipher text 
+def cipher(text, key_stream):
   if len(key_stream) != N_WORDS:
     raise ValueError('Key stream must have 16 words!')
   key_stream = ''.join(key_stream)
@@ -150,8 +159,8 @@ def main():
     print('■              WELCOME TO THE CHACHA20 CIPHER TOOL!               ■')
     print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
     print('What would you want to do?')
-    print('[1] Encrypt/Decrypt Message.')
-    print('[2] Encrypt/Decrypt Ascii Code.')
+    print('[1] Cipher Message.')
+    print('[2] Cipher Ascii Code of Message.')
     print('[3] Convert Ascii Code to Text.')
     print('[4] Convert Text to Ascii Code.')
     print('[0] Exit.')
@@ -219,70 +228,50 @@ def main():
       for i in range(len(initial_state)):
         initial_state[i] = ''.join(initial_state[i])
 
-      final_state = generate_key_stream(initial_state)
-
-      key_stream = [None] * N_WORDS
-      for i in range(N_WORDS):
-        key_stream[i] = truncate(initial_state[i] + final_state[i], N_HEX)
-
+      final_state = chacha_block(initial_state)
+      key_stream = generate_key_stream(initial_state, final_state)
+      
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print('■                  INITIAL STATE OF THE CIPHER                    ■')
+      print('■                         INITIAL STATE                           ■')
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      format_state(initial_state)
-      iterate_state(initial_state)
+      iterate_state(format_state(initial_state))
 
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print('■               FINAL STATE OF CHACHA20 BLOCK                     ■')
+      print('■                        CHACHA20 BLOCK                           ■')
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      format_state(final_state)
-      iterate_state(final_state)
+      iterate_state(format_state(final_state))
 
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print('■                  KEY STREAM OF CHACHA20                         ■')
+      print('■                          KEY STREAM                             ■')
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      format_state(key_stream)
-      iterate_state(key_stream)
+      iterate_state(format_state(key_stream))
 
     if option == '1':
-      # Ask for text to encrypt/decrypt
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       text = input('Introduce text to encrypt/decrypt: ')
 
     if option == '2':
-      # Ask for ascii code to convert to text in order to encrypt/decrypt
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       ascii_code = input('Introduce ascii code: ')
       text = ascii_to_text(ascii_code)
 
     if option in ['1', '2']:
-      output_ascii = encrypt_decrypt(text, key_stream)
+      output_ascii = cipher(text, key_stream)
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print('■                       ASCII OUTPUT                              ■')
+      print('Ascci code output:', output_ascii)
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print(output_ascii)
-
-      text = ascii_to_text(output_ascii)
-      print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print('■                        TEXT OUTPUT                              ■')
-      print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print(text)
+      print('Text output:', ascii_to_text(output_ascii))
 
     # If option is 3, ask for ascii code to convert to text
     if option == '3':
       ascii_code = input('Introduce ascii code: ')
-      text = ascii_to_text(ascii_code)
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print('■                       OUTPUT TEXT                               ■')
-      print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print(text)
+      print('Text output:', ascii_to_text(output_ascii))
 
     # If option is 4, ask for text to convert to ascii code
     if option == '4':
       text = input('Introduce text: ')
-      ascii_code = text_to_ascii(text)
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print('■                        ASCII CODE                               ■')
-      print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print(ascii_code)
+      print('Ascci code output:', text_to_ascii(text))
 
 main()

@@ -131,12 +131,18 @@ def iterate_state(state):
   print('')
 
 # Cipher text 
-def cipher(text, key_stream):
+def cipher(text, key_stream, number_system = 10):
   if len(key_stream) != N_WORDS:
     raise ValueError('Key stream must have 16 words!')
   key_stream = ''.join(key_stream)
-  text = text_to_ascii(text)
-  return int(text) ^ int(key_stream, 16)
+
+  if number_system == 10:
+    text = text_to_ascii(text)
+  elif number_system == 16:
+    text = hex_to_bin(text)
+    number_system = 2
+
+  return int(text, number_system) ^ int(key_stream, 16)
 
 """"""
 # Constants
@@ -161,15 +167,16 @@ def main():
     print('What would you want to do?')
     print('[1] Cipher Message.')
     print('[2] Cipher Ascii Code of Message.')
-    print('[3] Convert Ascii Code to Text.')
-    print('[4] Convert Text to Ascii Code.')
+    print('[3] Cipher Message in Hexadecimal.')
+    print('[4] Convert Ascii Code to Text.')
+    print('[5] Convert Text to Ascii Code.')
     print('[0] Exit.')
     print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
     option = input('Option  ->  ')
     print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
 
     # If option is not valid, ask again
-    if option not in ['0', '1', '2', '3', '4']:
+    if option not in ['0', '1', '2', '3', '4', '5']:
       print('Invalid option!')
       continue
 
@@ -180,7 +187,7 @@ def main():
       break
 
     # If option is '1' or '2', ask for key, counter and nonce
-    if option == '1' or option == '2':
+    if option == '1' or option == '2' or option == '3':
       # Ask for key
       key = input('Introduce key: ')
       if not key.isnumeric():
@@ -255,21 +262,32 @@ def main():
       ascii_code = input('Introduce ascii code: ')
       text = ascii_to_text(ascii_code)
 
+    if option == '3':
+      print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
+      text = input('Introduce text in hexadecimal: ')
+
     if option in ['1', '2']:
       output_ascii = cipher(text, key_stream)
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
-      print('Ascci code output:', output_ascii)
+      print('Ascii code output:', output_ascii)
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       print('Text output:', ascii_to_text(output_ascii))
 
-    # If option is 3, ask for ascii code to convert to text
     if option == '3':
+      output_ascii = cipher(text, key_stream, 16)
+      print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
+      print('Ascii code output:', output_ascii)
+      print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
+      print('Text output in hexadecimal:', to_hex(output_ascii))
+
+    # If option is 4, ask for ascii code to convert to text
+    if option == '4':
       ascii_code = input('Introduce ascii code: ')
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       print('Text output:', ascii_to_text(output_ascii))
 
-    # If option is 4, ask for text to convert to ascii code
-    if option == '4':
+    # If option is 5, ask for text to convert to ascii code
+    if option == '5':
       text = input('Introduce text: ')
       print('■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■')
       print('Ascci code output:', text_to_ascii(text))

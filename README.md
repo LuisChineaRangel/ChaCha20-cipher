@@ -45,8 +45,9 @@ Once executed, a menu will prompt asking for desired option:
 What would you want to do?
 [1] Cipher Message.
 [2] Cipher Ascii Code of Message.
-[3] Convert Ascii Code to Text.
-[4] Convert Text to Ascii Code.
+[3] Cipher Message in Hexadecimal.
+[4] Convert Ascii Code to Text.
+[5] Convert Text to Ascii Code.
 [0] Exit.
 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 Option  ->
@@ -54,7 +55,8 @@ Option  ->
 
 1. Encrypts/Decrypts a message after inserting key, counter and nonce values. The program will generate a key stream to make a XOR operation with the message.
 2. Similar to option 1, encrypts/decrypts a message giving its ascii code ```(no plain text!)```.
-3. Converts a given ascii code to its corresponding string. It's important to notice that the ascii code of each character has 3 digits!
+3. Similar to option 1, encrypts/decrypts a message in hexadecimal form ```(no plain text)```. 
+4. Converts a given ascii code to its corresponding string. It's important to notice that the ascii code of each character has 3 digits!
   ```
   ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
   Introduce ascii code: 072101108108111
@@ -62,7 +64,7 @@ Option  ->
   OUTPUT TEXT: Hello
   ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
    ```
-4. Similar to option 4, converts a string to its corresponding ascii code
+5. Similar to option 4, converts a string to its corresponding ascii code
 
 ## Maintainers 👷
 
